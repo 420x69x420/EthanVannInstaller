@@ -62,8 +62,34 @@ public class LauncherHijack{
 			}
 		}).start();
 	}
+	private static void setupProxy() {
+	        String proxyHost = System.getProperty("socksProxyHost");
+	        String proxyPort = System.getProperty("socksProxyPort");
+	        String proxyUsername = System.getProperty("java.net.socks.username");
+	        String proxyPassword = System.getProperty("java.net.socks.password");
+	
+	        if (proxyHost != null && proxyPort != null) {
+	            System.out.println("Setting up SOCKS proxy: " + proxyHost + ":" + proxyPort);
+	            
+	            if (proxyUsername != null && proxyPassword != null) {
+	                System.out.println("Using proxy authentication");
+	                final String user = proxyUsername;
+	                final char[] pass = proxyPassword.toCharArray();
+	
+	                Authenticator.setDefault(new Authenticator() {
+	                    private final PasswordAuthentication auth = new PasswordAuthentication(user, pass);
+	
+	                    protected PasswordAuthentication getPasswordAuthentication() {
+	                        return auth;
+	                    }
+	                });
+	            }
+	        }
+	    }
 
-	public static void main(String[] args){
+    	public static void main(String[] args) {
+	        // Set up proxy
+	        setupProxy();
 		// Force disable the "JVMLauncher", was just easiest way to do what I wanted at the time.
 		System.setProperty("runelite.launcher.reflect", "true");
 		new LauncherHijack();
